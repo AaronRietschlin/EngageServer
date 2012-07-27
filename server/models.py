@@ -12,18 +12,23 @@ STATE_LENGTH = 20
 #The attractions
 class Attraction(models.Model):
     name = models.CharField("Attraction Name", max_length=90)
-    latitude = models.DecimalField(default=0)
-    longitude = models.DecimalField()
+    latitude = models.DecimalField(max_digits=10, decimal_places=2)
+    longitude = models.DecimalField(max_digits=10, decimal_places=2)
     # Adding auto_now_add because it sets a date when it was created
     created_at = models.DateTimeField(auto_now_add=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
     # Adding auto_now to this because it sets the date to the current time every time it's updated
     last_modified = models.DateTimeField(auto_now=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
     description = models.TextField(help_text="The description of the attraction")
-    # '_id' is automatically appended -> photo_id will be the key
-    photo = models.ForeignKey('Photo')
     # Not sure how to do this
     attractiontype = models.ForeignKey('AttractionType')
-    attractiondetail = models.ForeignKey('AttractionDetail', help_text="The details of the attraction (including address, state, etc.")
+    city = models.CharField(max_length=CITY_LENGTH)
+    address = models.CharField(max_length=ADDRESS_LENGTH)
+    zipcode = models.CharField(max_length=ZIP_LENGTH)
+    state = models.CharField(max_length=STATE_LENGTH)
+    upvote = models.IntegerField(blank=True, default=0)
+    downvote = models.IntegerField(blank=True, default=0)
+    
+    #TODO Implement the taggit thing
 #    tags = TaggableManager()
     
     # The meta options We order by name. Get Latest by is when using 
@@ -35,6 +40,7 @@ class Attraction(models.Model):
     
 #This class is the Attraction Types. This will be things like "Bar", or "Live Musics", etc
 class AttractionType(models.Model):
+    # TODO Define the choices
     name = models.CharField(max_length=30)
     
     class Meta:
@@ -47,7 +53,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     
     #Our custom fields
-    photo = models.ForeignKey('Photo')
     city = models.CharField(max_length=CITY_LENGTH)
     address = models.CharField(max_length=ADDRESS_LENGTH)
     zipcode = models.CharField(max_length=ZIP_LENGTH)
@@ -62,16 +67,8 @@ class Photo(models.Model):
     last_modified = models.DateTimeField(auto_now=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
     # Needed? 
     url = models.CharField(max_length=100)
-    
-class AttractionDetail(models.Model):
-    traveler_comment = models.ForeignKey('Comment', help_text="The comment that will be shown as a Travelers Comment.")
-    local_comment = models.ForeignKey('Comment', help_text="The comment that will be shown as a Local's comment.")
-    city = models.CharField(max_length=CITY_LENGTH)
-    address = models.CharField(max_length=ADDRESS_LENGTH)
-    zipcode = models.CharField(max_length=ZIP_LENGTH)
-    state = models.CharField(max_length=STATE_LENGTH)
-    upvote = models.IntegerField(blank=True, default=0)
-    downvote = models.IntegerField(blank=True, default=0)
+    user = models.ForeignKey(UserProfile, blank=True)
+    attraction = models.ForeignKey(Attraction, blank=True)
     
 class Path(models.Model):
     user = models.ForeignKey(UserProfile)
@@ -81,6 +78,7 @@ class Comment(models.Model):
     # The type can either be 0 = Traveler comment. Local Comment = 1
     type_id = models.IntegerField(default=0)
     comment = models.TextField()
+    attraction = models.ForeignKey(Attraction, blank=True)
     upvote = models.IntegerField(blank=True, default=0)
     downvote = models.IntegerField(blank=True, default=0)
     # Adding auto_now_add because it sets a date when it was created
@@ -88,6 +86,7 @@ class Comment(models.Model):
     # Adding auto_now to this because it sets the date to the current time every time it's updated
     last_modified = models.DateTimeField(auto_now=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
     
+# This links the Attractions and the Paths. 
 class PathAttraction(models.Model):
     attraction_id = models.IntegerField()
     path_id = models.IntegerField()
