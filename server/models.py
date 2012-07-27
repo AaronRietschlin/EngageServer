@@ -24,6 +24,7 @@ class Attraction(models.Model):
     # Not sure how to do this
     attractiontype = models.ForeignKey('AttractionType')
     attractiondetail = models.ForeignKey('AttractionDetail', help_text="The details of the attraction (including address, state, etc.")
+#    tags = TaggableManager()
     
     # The meta options We order by name. Get Latest by is when using 
     class Meta:
@@ -71,3 +72,29 @@ class AttractionDetail(models.Model):
     state = models.CharField(max_length=STATE_LENGTH)
     upvote = models.IntegerField(blank=True, default=0)
     downvote = models.IntegerField(blank=True, default=0)
+    
+class Path(models.Model):
+    user = models.ForeignKey(UserProfile)
+    
+class Comment(models.Model):
+    user = models.ForeignKey(UserProfile, help_text="The user that made the comment")
+    # The type can either be 0 = Traveler comment. Local Comment = 1
+    type_id = models.IntegerField(default=0)
+    comment = models.TextField()
+    upvote = models.IntegerField(blank=True, default=0)
+    downvote = models.IntegerField(blank=True, default=0)
+    # Adding auto_now_add because it sets a date when it was created
+    created_at = models.DateTimeField(auto_now_add=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
+    # Adding auto_now to this because it sets the date to the current time every time it's updated
+    last_modified = models.DateTimeField(auto_now=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
+    
+class PathAttraction(models.Model):
+    attraction_id = models.IntegerField()
+    path_id = models.IntegerField()
+    
+    # This needs the attraction_id and the path_id to be unique. 
+    class Meta:
+        unique_together = ('attraction_id', 'path_id')
+    
+    
+    
