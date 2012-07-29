@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'taggit',
+    'tastypie',
     'server', #The server app
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',

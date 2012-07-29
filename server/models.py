@@ -12,8 +12,8 @@ STATE_LENGTH = 20
 #The attractions
 class Attraction(models.Model):
     name = models.CharField("Attraction Name", max_length=90)
-    latitude = models.DecimalField(max_digits=10, decimal_places=2)
-    longitude = models.DecimalField(max_digits=10, decimal_places=2)
+    latitude = models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
+    longitude = models.DecimalField(max_digits=10, decimal_places=2,default=0.0)
     # Adding auto_now_add because it sets a date when it was created
     created_at = models.DateTimeField(auto_now_add=True, help_text="HH:MM:SS DD Mmm YY, YYYY PST")
     # Adding auto_now to this because it sets the date to the current time every time it's updated
